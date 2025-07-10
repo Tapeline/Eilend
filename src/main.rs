@@ -13,7 +13,9 @@ fn main() {
     chunk.add_op(OpCode::LoadConst(0), 1);
     chunk.add_op_no_ln(OpCode::LoadConst(1));
     chunk.add_op_no_ln(OpCode::LoadConst(2));
-    chunk.add_op_no_ln(OpCode::DebugPrintStack);
+    chunk.add_op_no_ln(OpCode::Echo);
+    chunk.add_op_no_ln(OpCode::Echo);
+    chunk.add_op_no_ln(OpCode::Echo);
     devtools::print_chunk(&chunk);
     let mut vm = VM::new(chunk);
     vm.run_all();

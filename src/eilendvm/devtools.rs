@@ -1,6 +1,6 @@
 use std::ops::Deref;
 use crate::eilendvm::chunk::{ChunkConstant, CodeChunk};
-use crate::eilendvm::object::base_object::{EObjDyn, EObjTyp};
+use crate::eilendvm::object::base_object::{EObj, EObjDyn, EObjTyp};
 use crate::eilendvm::object::float_object::as_efloat;
 use crate::eilendvm::object::int_object::{as_eint, EInt};
 use crate::eilendvm::object::str_object::as_estr;
@@ -36,6 +36,8 @@ pub fn print_op(op: &OpCode, chunk: &CodeChunk) {
         },
         OpCode::DebugPrintStack =>
             print!("DBG_PRINT_STACK"),
+        OpCode::Echo =>
+            print!("ECHO"),
     }
 }
 

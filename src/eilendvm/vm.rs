@@ -49,6 +49,11 @@ impl VM {
             OpCode::DebugPrintStack => {
                 print_stack(&self.value_stack);
                 InstructionResult::Ok
+            },
+            OpCode::Echo => {
+                let value = &self.value_stack.pop();
+                println!("{}", value.display_str());
+                InstructionResult::Ok
             }
         }
     }

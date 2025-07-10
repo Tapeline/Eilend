@@ -2,42 +2,6 @@ use std::any::Any;
 use std::fmt::Display;
 use crate::eilendvm::object::table::Table;
 
-pub type EObjDyn = Box<dyn EObj>;
-
-pub trait EObj {
-    fn get_table(&self) -> &Table;
-    fn get_table_mut(&mut self) -> &mut Table;
-    fn typ(&self) -> &EObjTyp;
-    fn as_any(&self) -> &dyn Any;
-}
-
-#[macro_export]
-macro_rules! eobj_common_impl {
-    ($name: ident, $typ: expr) => {
-        impl EObj for $name {
-            fn get_table(&self) -> &Table {
-                &self.table
-            }
-
-            fn get_table_mut(&mut self) -> &mut Table {
-                &mut self.table
-            }
-
-            fn typ(&self) -> &EObjTyp {
-                &$typ
-            }
-
-            fn as_any(&self) -> &dyn Any {
-                self
-            }
-        }
-    }
-}
-
-pub struct EObject {
-    table: Table,
-}
-
 pub enum EObjTyp {
     PLAIN, INT, FLOAT, STR
 }
@@ -53,4 +17,19 @@ impl Display for EObjTyp {
     }
 }
 
-eobj_common_impl!(EObject, EObjTyp::PLAIN);
+pub type EObjDyn = Box<dyn EObj>;
+
+pub trait EObj {
+
+    // Utility ops
+    fn get_table(&self) -> &Table;
+    fn get_table_mut(&mut self) -> &mut Table;
+    fn typ(&self) -> &EObjTyp;
+    fn as_any(&self) -> &dyn Any;
+    fn as_any_mut(&mut self) -> &mut dyn Any;
+
+    // Common object operations
+    fn display_str(&self) -> String {
+        "Object".to_string()
+    }
+}

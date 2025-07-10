@@ -1,6 +1,6 @@
-use std::ops::Deref;
 use crate::eilendvm::chunk::{ChunkConstant, CodeChunk};
 use crate::eilendvm::object::base_object::{EObj, EObjDyn, EObjTyp};
+use crate::eilendvm::object::bool_object::as_ebool;
 use crate::eilendvm::object::float_object::as_efloat;
 use crate::eilendvm::object::int_object::{as_eint, EInt};
 use crate::eilendvm::object::str_object::as_estr;
@@ -38,6 +38,10 @@ pub fn print_op(op: &OpCode, chunk: &CodeChunk) {
             print!("DBG_PRINT_STACK"),
         OpCode::Echo =>
             print!("ECHO"),
+        OpCode::PushBool(value) =>
+            print!("PUSH_BOOL {}", value),
+        OpCode::PushNull =>
+            print!("PUSH_NULL"),
     }
 }
 
@@ -55,6 +59,8 @@ pub fn print_value(value: &EObjDyn) {
         EObjTyp::STR => print!("<Str: {}>", as_estr(value).get_value()),
         EObjTyp::FLOAT => print!("<Float: {}>", as_efloat(value).get_value()),
         EObjTyp::PLAIN => print!("<Obj>"),
+        EObjTyp::BOOL => print!("<Bool: {}>", as_ebool(value).get_value()),
+        EObjTyp::NULL => print!("<Null>")
     }
 }
 

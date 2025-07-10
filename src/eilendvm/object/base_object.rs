@@ -3,7 +3,7 @@ use std::fmt::Display;
 use crate::eilendvm::object::table::Table;
 
 pub enum EObjTyp {
-    PLAIN, INT, FLOAT, STR
+    PLAIN, INT, FLOAT, STR, BOOL, NULL
 }
 
 impl Display for EObjTyp {
@@ -13,6 +13,8 @@ impl Display for EObjTyp {
             EObjTyp::INT => write!(f, "INT"),
             EObjTyp::FLOAT => write!(f, "FLOAT"),
             EObjTyp::STR => write!(f, "STR"),
+            EObjTyp::BOOL => write!(f, "BOOL"),
+            EObjTyp::NULL => write!(f, "NULL"),
         }
     }
 }

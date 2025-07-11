@@ -18,6 +18,9 @@ impl EObj for EBool {
     fn display_str(&self) -> String {
         self.value.to_string()
     }
+
+    fn is_truthy(&self) -> bool { self.value }
+    fn is_falsy(&self) -> bool { !self.value }
 }
 
 impl EBool {

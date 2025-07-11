@@ -1,11 +1,11 @@
-use crate::vm_panic;
+use crate::{pop_stack, vm_panic};
 use std::cell::RefCell;
 use std::rc::Rc;
 use crate::{assert_that, rc_cell};
 use crate::eilendvm::chunk::{ChunkConstant, CodeChunk};
 use crate::eilendvm::devtools::print_stack;
 use crate::eilendvm::io::IO;
-use crate::eilendvm::object::base_object::{EObj};
+use crate::eilendvm::object::base_object::{EObj, EObjRef};
 use crate::eilendvm::object::bool_object::{v_bool};
 use crate::eilendvm::object::float_object::{v_float};
 use crate::eilendvm::object::int_object::{v_int};
@@ -44,7 +44,7 @@ impl VM {
     }
 
     pub fn get_current_line(&self) -> usize {
-        if let Some(lineno) = self.code.get_lineno(self.ip) {
+        if let Some(lineno) = self.code.get_lineno(self.ip - 1) {
             *lineno
         } else {
             0
@@ -57,6 +57,7 @@ impl VM {
         //#[cfg(feature = "debug")]
         match instr {
             OpCode::Nop => {},
+
             OpCode::LoadConst(const_i) => {
                 assert_that!(self, const_i < &self.code.get_constants().len());
                 match self.code.get_const(*const_i) {
@@ -68,22 +69,27 @@ impl VM {
                         self.value_stack.push(rc_cell!(v_str(value.clone()))),
                 }
             },
+
             OpCode::DebugPrintStack => {
                 print_stack(&self.value_stack);
             },
+
             OpCode::Echo => {
-                let value = &self.value_stack.pop();
+                let value = pop_stack!(self);
                 self.io.print(&*value.borrow().display_str());
                 self.io.print("\n");
             },
+
             OpCode::PushBool(value) => {
                 self.value_stack.push(rc_cell!(v_bool(*value)));
             },
+
             OpCode::PushNull => {
                 self.value_stack.push(rc_cell!(v_null()));
             },
+
             OpCode::StoreGlobal(index) => {
-                let value = self.value_stack.pop();
+                let value = pop_stack!(self);
                 assert_that!(self, index < &self.code.get_constants().len());
                 if let ChunkConstant::Str(name) = self.code.get_const(*index) {
                      self.globals.put(name.to_string(), value);
@@ -91,6 +97,7 @@ impl VM {
                     vm_panic!(self, "Global name is not a string");
                 }
             },
+
             OpCode::LoadGlobal(index) => {
                 assert_that!(self, index < &self.code.get_constants().len());
                 if let ChunkConstant::Str(name) = self.code.get_const(*index) {
@@ -102,6 +109,33 @@ impl VM {
                     }
                 } else {
                     vm_panic!(self, "Global name is not a string");
+                }
+            },
+
+            OpCode::Jump(amount) => {
+                if self.ip + amount >= self.code.get_ops().len() {
+                    vm_panic!(self, "Jump out of bounds");
+                }
+                self.ip += amount - 1;
+            },
+
+            OpCode::JumpIfFalse(amount) => {
+                let value = &pop_stack!(self);
+                if self.ip + amount >= self.code.get_ops().len() {
+                    vm_panic!(self, "Jump out of bounds");
+                }
+                if value.borrow().is_falsy() {
+                    self.ip += amount - 1;
+                }
+            },
+
+            OpCode::JumpIfTrue(amount) => {
+                let value = &pop_stack!(self);
+                if self.ip + amount >= self.code.get_ops().len() {
+                    vm_panic!(self, "Jump out of bounds");
+                }
+                if value.borrow().is_truthy() {
+                    self.ip += amount - 1;
                 }
             }
         }

@@ -34,8 +34,9 @@ pub trait EObj {
 
     // Common object operations
     fn display_str(&self) -> String {
-        "Object".to_string()
+        "Obj".to_string()
     }
+
+    fn is_truthy(&self) -> bool { true }
+    fn is_falsy(&self) -> bool { false }
 }
-
-

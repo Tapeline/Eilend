@@ -18,6 +18,8 @@ fn main() {
     chunk.add_const(ChunkConstant::Str("c".to_owned()));
     chunk.add_op_no_ln(OpCode::LoadConst(0));
     chunk.add_op_no_ln(OpCode::StoreGlobal(3));
+    chunk.add_op_no_ln(OpCode::PushBool(true));
+    chunk.add_op_no_ln(OpCode::JumpIfTrue(5));
     chunk.add_op_no_ln(OpCode::LoadConst(1));
     chunk.add_op_no_ln(OpCode::StoreGlobal(4));
     chunk.add_op_no_ln(OpCode::LoadConst(2));

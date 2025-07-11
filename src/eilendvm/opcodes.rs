@@ -10,6 +10,11 @@ pub enum OpCode {
     StoreGlobal(usize),
     LoadGlobal(usize),
 
+    // Control flow
+    JumpIfTrue(usize),
+    JumpIfFalse(usize),
+    Jump(usize),
+
     // Basics
     Echo,
 

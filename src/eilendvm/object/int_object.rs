@@ -22,6 +22,9 @@ impl EObj for EInt {
 
 impl EInt {
     pub fn get_value(&self) -> i64 { self.value }
+
+    fn is_truthy(&self) -> bool { self.value != 0 }
+    fn is_falsy(&self) -> bool { self.value == 0 }
 }
 
 eobj_common_converters!(EInt, int, EObjTyp::INT, i64);

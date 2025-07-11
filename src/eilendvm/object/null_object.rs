@@ -12,6 +12,9 @@ pub struct ENull {
 
 impl EObj for ENull {
     eobj_common_impl!(EObjTyp::NULL);
+
+    fn is_truthy(&self) -> bool { false }
+    fn is_falsy(&self) -> bool { true }
 }
 
 pub fn v_null() -> ENull {

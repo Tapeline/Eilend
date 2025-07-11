@@ -22,6 +22,9 @@ impl EObj for EStr {
 
 impl EStr {
     pub fn get_value(&self) -> &String { &self.value }
+
+    fn is_truthy(&self) -> bool { self.value.len() != 0 }
+    fn is_falsy(&self) -> bool { self.value.len() == 0 }
 }
 
 

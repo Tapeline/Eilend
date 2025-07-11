@@ -53,6 +53,12 @@ pub fn print_op(op: &OpCode, chunk: &CodeChunk) {
             print_constant(chunk.get_const(*index));
             print!(")");
         },
+        OpCode::JumpIfFalse(amount) =>
+            print!("JUMP_IF_FALSE\t{}", amount),
+        OpCode::JumpIfTrue(amount) =>
+            print!("JUMP_IF_TRUE\t{}", amount),
+        OpCode::Jump(amount) =>
+            print!("JUMP\t\t{}", amount),
     }
 }
 

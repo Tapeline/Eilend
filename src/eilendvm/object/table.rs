@@ -1,8 +1,8 @@
 use std::collections::HashMap;
-use crate::eilendvm::object::base_object::{EObj, EObjDyn};
+use crate::eilendvm::object::base_object::{EObj, EObjRef};
 
 pub struct Table {
-    map: HashMap<String, EObjDyn>
+    map: HashMap<String, EObjRef>
 }
 
 impl Table {
@@ -10,11 +10,11 @@ impl Table {
         Table{map: HashMap::new()}
     }
 
-    pub fn get(&self, key: &str) -> Option<&EObjDyn> {
+    pub fn get(&self, key: &str) -> Option<&EObjRef> {
         self.map.get(key)
     }
 
-    pub fn put(&mut self, key: String, obj: EObjDyn) {
+    pub fn put(&mut self, key: String, obj: EObjRef) {
         self.map.insert(key, obj);
     }
 

@@ -1,5 +1,7 @@
-use crate::eilendvm::object::base_object::{EObj, EObjDyn};
+use crate::eilendvm::object::base_object::{EObj, EObjRef};
 use std::any::Any;
+use std::cell::RefCell;
+use std::rc::Rc;
 use crate::eilendvm::object::base_object::EObjTyp;
 use crate::eilendvm::object::table::Table;
 use crate::eobj_common_impl;
@@ -16,6 +18,6 @@ pub fn v_null() -> ENull {
     ENull { table: Table::new() }
 }
 
-pub fn v_null_box() -> EObjDyn {
-    Box::new(v_null())
+pub fn v_null_ref() -> EObjRef {
+    Rc::new(RefCell::new(v_null()))
 }

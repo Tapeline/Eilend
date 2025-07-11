@@ -1,15 +1,15 @@
-use std::io::Write;
-use std::process::Output;
-use crate::assert_that;
+use std::cell::RefCell;
+use std::rc::Rc;
+use crate::{assert_that, rc_cell};
 use crate::eilendvm::chunk::{ChunkConstant, CodeChunk};
 use crate::eilendvm::devtools::print_stack;
 use crate::eilendvm::io::IO;
-use crate::eilendvm::object::base_object::{EObj, EObjDyn};
-use crate::eilendvm::object::bool_object::v_bool_box;
-use crate::eilendvm::object::float_object::v_float_box;
-use crate::eilendvm::object::int_object::{v_int, v_int_box};
-use crate::eilendvm::object::null_object::v_null_box;
-use crate::eilendvm::object::str_object::v_str_box;
+use crate::eilendvm::object::base_object::{EObj};
+use crate::eilendvm::object::bool_object::{v_bool};
+use crate::eilendvm::object::float_object::{v_float};
+use crate::eilendvm::object::int_object::{v_int};
+use crate::eilendvm::object::null_object::{v_null};
+use crate::eilendvm::object::str_object::{v_str};
 use crate::eilendvm::opcodes::OpCode;
 use crate::eilendvm::value_stack::ValueStack;
 
@@ -49,11 +49,11 @@ impl VM {
                 assert_that!(const_i < &self.code.get_constants().len());
                 match self.code.get_const(*const_i) {
                     ChunkConstant::Int(value) =>
-                        self.value_stack.push(v_int_box(*value)),
+                        self.value_stack.push(rc_cell!(v_int(*value))),
                     ChunkConstant::Float(value) =>
-                        self.value_stack.push(v_float_box(*value)),
+                        self.value_stack.push(rc_cell!(v_float(*value))),
                     ChunkConstant::Str(value) =>
-                        self.value_stack.push(v_str_box(value.clone())),
+                        self.value_stack.push(rc_cell!(v_str(value.clone()))),
                 }
                 InstructionResult::Ok
             },
@@ -63,16 +63,16 @@ impl VM {
             },
             OpCode::Echo => {
                 let value = &self.value_stack.pop();
-                self.io.print(&*value.display_str());
+                self.io.print(&*value.borrow().display_str());
                 self.io.print("\n");
                 InstructionResult::Ok
             },
             OpCode::PushBool(value) => {
-                self.value_stack.push(v_bool_box(*value));
+                self.value_stack.push(rc_cell!(v_bool(*value)));
                 InstructionResult::Ok
             },
             OpCode::PushNull => {
-                self.value_stack.push(v_null_box());
+                self.value_stack.push(rc_cell!(v_null()));
                 InstructionResult::Ok
             }
         }

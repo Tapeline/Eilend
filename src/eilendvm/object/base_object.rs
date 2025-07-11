@@ -1,5 +1,7 @@
 use std::any::Any;
+use std::cell::RefCell;
 use std::fmt::Display;
+use std::rc::Rc;
 use crate::eilendvm::object::table::Table;
 
 pub enum EObjTyp {
@@ -19,7 +21,7 @@ impl Display for EObjTyp {
     }
 }
 
-pub type EObjDyn = Box<dyn EObj>;
+pub type EObjRef = Rc<RefCell<dyn EObj>>;
 
 pub trait EObj {
 
@@ -35,3 +37,5 @@ pub trait EObj {
         "Object".to_string()
     }
 }
+
+

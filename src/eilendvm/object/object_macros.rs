@@ -26,6 +26,13 @@ macro_rules! eobj_common_impl {
 }
 
 #[macro_export]
+macro_rules! rc_cell {
+    ($expr: expr) => {
+        Rc::new(RefCell::new($expr))
+    };
+}
+
+#[macro_export]
 macro_rules! eobj_common_converters {
     ($name: ident, $lowercase_name: ident, $obj_type: expr, $value_t: ty) => {
         paste::item! {
@@ -36,32 +43,30 @@ macro_rules! eobj_common_converters {
                 }
             }
 
-            pub fn [< v_ $lowercase_name _box >](value: $value_t) -> EObjDyn {
-                Box::new($name {
+            pub fn [< v_ $lowercase_name _ref >](value: $value_t) -> EObjRef {
+                Rc::new(RefCell::new($name {
                     table: Table::new(),
                     value
-                })
+                }))
             }
 
-            pub fn [< as_e $lowercase_name >](value: &EObjDyn) -> &$name {
-                match value.typ() {
-                    $obj_type =>
-                        value.as_any().downcast_ref::<$name>().expect(
-                            concat!("failed to downcast ", stringify!($name))
-                        ),
-                    _ => panic!("tried to downcast {} as {}", value.typ(), stringify!($name))
-                }
-            }
-
-            pub fn [< as_e $lowercase_name _mut >](value: &mut EObjDyn) -> &mut $name {
-                match value.typ() {
-                    $obj_type =>
-                        value.as_any_mut().downcast_mut::<$name>().expect(
-                            concat!("failed to downcast {}", stringify!($name))
-                        ),
-                    _ => panic!("tried to downcast {} as {}", value.typ(), stringify!($name))
+            pub fn [<as_e $lowercase_name >](value: &Rc<RefCell<dyn EObj>>) -> Ref<'_, $name> {
+                // some shitty magic i do not want to understand
+                // thx lubaskinc0de for that snippet
+                let v = value.borrow();
+                match v.typ() {
+                    EObjTyp::INT => {
+                        Ref::map(v, |v| {
+                            v.as_any().downcast_ref::<$name>().expect(
+                                concat!("failed to downcast ", stringify!($name))
+                            )
+                        })
+                    }
+                    _ => panic!(concat!("tried to downcast {} as ", stringify!($name)), v.typ()),
                 }
             }
         }
     };
 }
+
+

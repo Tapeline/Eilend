@@ -1,8 +1,9 @@
 use crate::eilendvm::chunk::{ChunkConstant, CodeChunk};
-use crate::eilendvm::object::base_object::{EObj, EObjDyn, EObjTyp};
+use crate::eilendvm::object::base_object::{EObj, EObjRef, EObjTyp};
 use crate::eilendvm::object::bool_object::as_ebool;
 use crate::eilendvm::object::float_object::as_efloat;
-use crate::eilendvm::object::int_object::{as_eint, EInt};
+use crate::eilendvm::object::int_object::as_eint;
+use crate::eilendvm::object::plain_object::as_obj;
 use crate::eilendvm::object::str_object::as_estr;
 use crate::eilendvm::opcodes::OpCode;
 use crate::eilendvm::value_stack::ValueStack;
@@ -53,8 +54,8 @@ pub fn print_constant(chunk_constant: &ChunkConstant) {
     }
 }
 
-pub fn print_value(value: &EObjDyn) {
-    match value.typ() {
+pub fn print_value(value: &EObjRef) {
+    match as_obj(value).typ() {
         EObjTyp::INT => print!("<Int: {}>", as_eint(value).get_value()),
         EObjTyp::STR => print!("<Str: {}>", as_estr(value).get_value()),
         EObjTyp::FLOAT => print!("<Float: {}>", as_efloat(value).get_value()),
@@ -72,7 +73,7 @@ pub fn print_stack(stack: &ValueStack) {
         } else {
             print!("   ");
         }
-        print_value(value);
+        print_value(&value);
         println!();
     })
 }

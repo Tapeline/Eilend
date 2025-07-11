@@ -48,6 +48,11 @@ def data_types() {
     h = Dict()
         .add("hello", "world")
         .add("key", "value")
+    # plain table
+    t = {
+        key = value,
+        :key_from_var = value
+    }
 }
 
 def lambdas() {

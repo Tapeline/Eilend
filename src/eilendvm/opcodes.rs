@@ -1,10 +1,14 @@
 pub enum OpCode {
     Nop,
 
-    // Data loading
+    // Data construction
     LoadConst(usize),
     PushBool(bool),
     PushNull,
+
+    // Variables
+    StoreGlobal(usize),
+    LoadGlobal(usize),
 
     // Basics
     Echo,

@@ -1,4 +1,4 @@
-mod table;
+pub mod table;
 pub mod base_object;
 pub mod plain_object;
 pub mod int_object;

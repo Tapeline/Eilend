@@ -31,7 +31,7 @@ pub fn print_op(op: &OpCode, chunk: &CodeChunk) {
         OpCode::Nop =>
             print!("NOP"),
         OpCode::LoadConst(index) => {
-            print!("LOAD_CONST {} (", index);
+            print!("LOAD_CONST\t{} (", index);
             print_constant(chunk.get_const(*index));
             print!(")");
         },
@@ -40,9 +40,19 @@ pub fn print_op(op: &OpCode, chunk: &CodeChunk) {
         OpCode::Echo =>
             print!("ECHO"),
         OpCode::PushBool(value) =>
-            print!("PUSH_BOOL {}", value),
+            print!("PUSH_BOOL\t{}", value),
         OpCode::PushNull =>
             print!("PUSH_NULL"),
+        OpCode::StoreGlobal(index) => {
+            print!("STORE_GLOBAL\t{} (", index);
+            print_constant(chunk.get_const(*index));
+            print!(")");
+        },
+        OpCode::LoadGlobal(index) => {
+            print!("LOAD_GLOBAL\t{} (", index);
+            print_constant(chunk.get_const(*index));
+            print!(")");
+        },
     }
 }
 

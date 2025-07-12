@@ -5,7 +5,7 @@ use std::rc::Rc;
 use crate::eilendvm::object::table::Table;
 
 pub enum EObjTyp {
-    PLAIN, INT, FLOAT, STR, BOOL, NULL
+    PLAIN, INT, FLOAT, STR, BOOL, NULL, FUNC
 }
 
 impl Display for EObjTyp {
@@ -17,6 +17,7 @@ impl Display for EObjTyp {
             EObjTyp::STR => write!(f, "STR"),
             EObjTyp::BOOL => write!(f, "BOOL"),
             EObjTyp::NULL => write!(f, "NULL"),
+            EObjTyp::FUNC => write!(f, "FUNC"),
         }
     }
 }

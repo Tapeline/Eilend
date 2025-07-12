@@ -1,9 +1,9 @@
 #[macro_export]
 macro_rules! vm_panic {
-    ($vm: expr, $cause: expr) => {
+    ($frame: expr, $cause: expr) => {
         panic!(
-            "VM has crashed\nAt instr {} (line {})\n{}",
-            $vm.ip - 1, $vm.get_current_line(), $cause
+            "VM has crashed\nAt instr {} (line {}): frame {}\n{}",
+            $frame.ip - 1, $frame.get_current_line(), $frame.get_name(), $cause
         )
     };
 }
@@ -25,11 +25,11 @@ macro_rules! assert_that {
 
 #[macro_export]
 macro_rules! pop_stack {
-    ($vm: expr) => {
+    ($vm: expr, $frame: expr) => {
         if $vm.value_stack.len() > 0 {
             $vm.value_stack.pop()
         } else {
-            vm_panic!($vm, "Stack underflow");
+            vm_panic!($frame, "Stack underflow");
         }
     }
 }

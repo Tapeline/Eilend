@@ -2,6 +2,7 @@ use crate::eilendvm::chunk::{ChunkConstant, CodeChunk};
 use crate::eilendvm::object::base_object::{EObj, EObjRef, EObjTyp};
 use crate::eilendvm::object::bool_object::as_ebool;
 use crate::eilendvm::object::float_object::as_efloat;
+use crate::eilendvm::object::func_object::as_efunc;
 use crate::eilendvm::object::int_object::as_eint;
 use crate::eilendvm::object::plain_object::as_obj;
 use crate::eilendvm::object::str_object::as_estr;
@@ -59,6 +60,8 @@ pub fn print_op(op: &OpCode, chunk: &CodeChunk) {
             print!("JUMP_IF_TRUE\t{}", amount),
         OpCode::Jump(amount) =>
             print!("JUMP\t\t{}", amount),
+        OpCode::Call(arg_count) =>
+            print!("CALL\t{}", arg_count),
     }
 }
 
@@ -77,7 +80,8 @@ pub fn print_value(value: &EObjRef) {
         EObjTyp::FLOAT => print!("<Float: {}>", as_efloat(value).get_value()),
         EObjTyp::PLAIN => print!("<Obj>"),
         EObjTyp::BOOL => print!("<Bool: {}>", as_ebool(value).get_value()),
-        EObjTyp::NULL => print!("<Null>")
+        EObjTyp::NULL => print!("<Null>"),
+        EObjTyp::FUNC => print!("<Func: {}", as_efunc(value).get_value().name)
     }
 }
 

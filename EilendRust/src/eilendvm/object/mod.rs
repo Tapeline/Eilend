@@ -7,3 +7,4 @@ pub mod str_object;
 pub mod object_macros;
 pub mod bool_object;
 pub mod null_object;
+pub mod func_object;

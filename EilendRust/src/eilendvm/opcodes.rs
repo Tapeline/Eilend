@@ -14,6 +14,7 @@ pub enum OpCode {
     JumpIfTrue(usize),
     JumpIfFalse(usize),
     Jump(usize),
+    Call(usize),
 
     // Basics
     Echo,

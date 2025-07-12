@@ -146,6 +146,25 @@ print(Vec2D(1, 2) is PointLike)
 print(Vec2D(1, 2) conforms to PointLike)
     # Success, indeed conforms to PointLike
 
+# Inheritance
+
+interface ParentLike {
+    a: Str
+}
+struct Parent conforms to ParentLike {
+    construct (self, a: Str) {
+        self.a = a
+    }
+    def print_a(self) print(self.a)
+}
+struct Child conforms to ParentLike {
+    **Parent
+    construct (self, a: Str, b: Str) {
+        self.a = a
+        self.b = b
+    }
+}
+
 def advanced_collections() {
     # list comprehension
     a = [

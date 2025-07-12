@@ -55,7 +55,7 @@ macro_rules! eobj_common_converters {
                 // thx lubaskinc0de for that snippet
                 let v = value.borrow();
                 match v.typ() {
-                    EObjTyp::INT => {
+                    $obj_type => {
                         Ref::map(v, |v| {
                             v.as_any().downcast_ref::<$name>().expect(
                                 concat!("failed to downcast ", stringify!($name))
@@ -63,6 +63,14 @@ macro_rules! eobj_common_converters {
                         })
                     }
                     _ => panic!(concat!("tried to downcast {} as ", stringify!($name)), v.typ()),
+                }
+            }
+
+            pub fn [<is_e $lowercase_name >](value: &EObjRef) -> bool {
+                let v = value.borrow();
+                match v.typ() {
+                    $obj_type => true,
+                    _ => false
                 }
             }
         }

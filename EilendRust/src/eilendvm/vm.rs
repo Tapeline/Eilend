@@ -2,12 +2,14 @@ use crate::{pop_stack, vm_panic};
 use std::cell::RefCell;
 use std::rc::Rc;
 use crate::{assert_that, rc_cell};
+use crate::eilendvm::call_stack::{CallFrame, CallStack};
 use crate::eilendvm::chunk::{ChunkConstant, CodeChunk};
 use crate::eilendvm::devtools::print_stack;
 use crate::eilendvm::io::IO;
 use crate::eilendvm::object::base_object::{EObj, EObjRef};
 use crate::eilendvm::object::bool_object::{v_bool};
 use crate::eilendvm::object::float_object::{v_float};
+use crate::eilendvm::object::func_object::{as_efunc, is_efunc, EFunc};
 use crate::eilendvm::object::int_object::{v_int};
 use crate::eilendvm::object::null_object::{v_null};
 use crate::eilendvm::object::str_object::{v_str};
@@ -21,6 +23,7 @@ pub struct VM {
     value_stack: ValueStack,
     io: Box<dyn IO>,
     globals: Table,
+    call_stack: CallStack
 }
 
 pub enum InstructionResult {
@@ -36,6 +39,7 @@ impl VM {
             value_stack: ValueStack::new(),
             io,
             globals: Table::new(),
+            call_stack: CallStack::new()
         }
     }
     
@@ -43,24 +47,21 @@ impl VM {
         self.io.as_ref()
     }
 
-    pub fn get_current_line(&self) -> usize {
-        if let Some(lineno) = self.code.get_lineno(self.ip - 1) {
-            *lineno
-        } else {
-            0
-        }
-    }
+
 
     pub fn run_one_instruction(&mut self) {
-        let instr = &self.code.get_ops()[self.ip];
-        self.ip += 1;
-        //#[cfg(feature = "debug")]
+        let mut frame = self.call_stack.frame();
+        let mut frame_func = frame.function.borrow_mut();
+        let frame_data = frame_func.get_value_mut();
+        let code = &frame_data.code;
+        let instr = &code.get_ops()[frame.ip];
+        frame.ip += 1;
         match instr {
             OpCode::Nop => {},
 
             OpCode::LoadConst(const_i) => {
-                assert_that!(self, const_i < &self.code.get_constants().len());
-                match self.code.get_const(*const_i) {
+                assert_that!(frame, const_i < &code.get_constants().len());
+                match code.get_const(*const_i) {
                     ChunkConstant::Int(value) =>
                         self.value_stack.push(rc_cell!(v_int(*value))),
                     ChunkConstant::Float(value) =>
@@ -75,7 +76,7 @@ impl VM {
             },
 
             OpCode::Echo => {
-                let value = pop_stack!(self);
+                let value = pop_stack!(self, frame);
                 self.io.print(&*value.borrow().display_str());
                 self.io.print("\n");
             },
@@ -89,54 +90,69 @@ impl VM {
             },
 
             OpCode::StoreGlobal(index) => {
-                let value = pop_stack!(self);
-                assert_that!(self, index < &self.code.get_constants().len());
-                if let ChunkConstant::Str(name) = self.code.get_const(*index) {
+                let value = pop_stack!(self, frame);
+                assert_that!(frame, index < &code.get_constants().len());
+                if let ChunkConstant::Str(name) = code.get_const(*index) {
                      self.globals.put(name.to_string(), value);
                 } else {
-                    vm_panic!(self, "Global name is not a string");
+                    vm_panic!(frame, "Global name is not a string");
                 }
             },
 
             OpCode::LoadGlobal(index) => {
-                assert_that!(self, index < &self.code.get_constants().len());
-                if let ChunkConstant::Str(name) = self.code.get_const(*index) {
+                assert_that!(frame, index < &code.get_constants().len());
+                if let ChunkConstant::Str(name) = code.get_const(*index) {
                     if let Some(value) = self.globals.get(name) {
                         self.value_stack.push(value.clone());
                     } else {
                         // TODO make it return an error instead
-                        vm_panic!(self, "Global not found");
+                        vm_panic!(frame, "Global not found");
                     }
                 } else {
-                    vm_panic!(self, "Global name is not a string");
+                    vm_panic!(frame, "Global name is not a string");
                 }
             },
 
             OpCode::Jump(amount) => {
-                if self.ip + amount >= self.code.get_ops().len() {
-                    vm_panic!(self, "Jump out of bounds");
+                if frame.ip + amount >= code.get_ops().len() {
+                    vm_panic!(frame, "Jump out of bounds");
                 }
-                self.ip += amount - 1;
+                frame.ip += amount - 1;
             },
 
             OpCode::JumpIfFalse(amount) => {
-                let value = &pop_stack!(self);
-                if self.ip + amount >= self.code.get_ops().len() {
-                    vm_panic!(self, "Jump out of bounds");
+                let value = &pop_stack!(self, frame);
+                if frame.ip + amount >= code.get_ops().len() {
+                    vm_panic!(frame, "Jump out of bounds");
                 }
                 if value.borrow().is_falsy() {
-                    self.ip += amount - 1;
+                    frame.ip += amount - 1;
                 }
             },
 
             OpCode::JumpIfTrue(amount) => {
-                let value = &pop_stack!(self);
-                if self.ip + amount >= self.code.get_ops().len() {
-                    vm_panic!(self, "Jump out of bounds");
+                let value = &pop_stack!(self, frame);
+                if frame.ip + amount >= code.get_ops().len() {
+                    vm_panic!(frame, "Jump out of bounds");
                 }
                 if value.borrow().is_truthy() {
-                    self.ip += amount - 1;
+                    frame.ip += amount - 1;
                 }
+            }
+
+            OpCode::Call(arg_count) => {
+                if (frame.ip + arg_count) >= code.get_ops().len() {
+                    vm_panic!(frame, "Call out of bounds");
+                }
+                let func = pop_stack!(self, frame);
+                if !is_efunc(&func) {
+                    // TODO
+                    vm_panic!(frame, "Can call only functions");
+                }
+                let func = as_efunc(&func).as_any().downcast_ref::<EFunc>().unwrap();
+                let new_frame = self.call_stack.new_frame(
+                    Rc::new(RefCell::new(func))
+                );
             }
         }
     }

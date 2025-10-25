@@ -1,0 +1,111 @@
+# Eilend grammar
+
+
+stmt ::=
+  varlist "=" explist |
+
+  "{" stmt {stmt} "}" |
+
+  "while" exp stmt |
+
+  "repeat" stmt {stmt} "until" exp |
+
+  "if" exp stmt {"else" "if" exp stmt} ["else" stmt] |
+  
+  "for" NAME "=" exp "..." exp ["," "step" exp] stmt |
+
+  "for" namelist "in" explist stmt |
+
+  "function" funcname "(" [parlist] ")" stmt |
+
+  "local" "function" NAME "(" [parlist] ")" stmt |
+
+  "local" namelist ["=" explist] |
+
+  expr
+
+
+varlist ::= var {"," var}
+
+var ::= NAME { "." NAME }
+
+namelist ::= NAME {"," NAME}
+
+funcname ::= NAME {"." NAME} [":" NAME]
+
+explist ::= {exp ","} exp
+
+laststat ::= "return" [explist] | "break"
+
+parlist ::= namelist ["," "..."] | "..."
+
+
+expr ::= disj
+
+disj ::=
+    conj { "or" cmp }
+
+conj ::=
+    cmp { "and" cmp }
+
+cmp ::=
+    term {
+    ">" term |
+    "<" term |
+    "<=" term |
+    ">=" term |
+    "==" term |
+    "!=" term
+    }
+
+term ::=
+    factor {
+    "+" factor |
+    "-" factor
+    }
+
+factor ::=
+    unop {
+    "*" unop |
+    "/" unop |
+    "%" unop
+    }
+
+unop ::=
+    "-" unop |
+    "not" unop |
+    "len" unop |
+    call
+
+call ::=
+    primary {
+    "(" [expr] {"," expr} ")" |
+    ":" NAME "(" [expr] {"," expr} ")" |  # match ":" even on next line
+    "." NAME |  # match "." even on next line
+    "[" expr "]" |
+    tableconstructor |
+    STRING
+    }
+
+primary ::=
+  "nil" |
+  "false" |
+  "true" |
+  NUMBER |
+  STRING |
+  "..." |
+
+  "->" stmt |
+  NAME "->" stmt |
+  "(" [parlist] ")" "->" stmt |
+  "(" expr ")" |
+
+  tableconstructor |
+  NAME
+
+
+tableconstructor ::= "{" [fieldlist] "}"
+
+fieldlist ::= field {"," field} [","]
+
+field ::= "[" exp "]" "=" exp | NAME "=" exp | exp

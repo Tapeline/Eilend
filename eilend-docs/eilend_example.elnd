@@ -1,0 +1,7 @@
+local a = {1, 2, 3};
+
+function f(x :: Int, y :: Float) :: Int {
+    local c = 0
+    for z = x ... y, step 5
+        c += 1
+}

@@ -1,0 +1,20 @@
+[project]
+name = "eilend-compiler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "syntactix",
+]
+
+[tool.uv.sources]
+syntactix = { git = "https://github.com/Tapeline/Syntactix.git" }
+
+[dependency-groups]
+test = [
+    "hypothesis>=6.142.4",
+    "inline-snapshot>=0.30.1",
+    "pytest>=8.4.2",
+    "syrupy>=5.0.0",
+]

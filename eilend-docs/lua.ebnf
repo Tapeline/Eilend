@@ -1,0 +1,60 @@
+# Lua 5.1 grammar
+
+chunk ::= {stat [";"]} [laststat [";"]]
+
+block ::= chunk
+
+stat ::=
+  varlist "=" explist |
+  functioncall | 
+  "do" block "end" |
+  "while" exp "do" block "end" |
+  "repeat" block "until" exp |
+  "if" exp "then" block {"elseif" exp "then" block} ["else" block] "end" |
+  "for" NAME "=" exp "," exp ["," exp] "do" block "end" |
+  "for" namelist "in" explist "do" block "end" |
+  "function" funcname funcbody |
+  "local" "function" NAME funcbody |
+  "local" namelist ["=" explist]
+
+laststat ::= "return" [explist] | "break"
+
+funcname ::= NAME {"." NAME} [":" NAME]
+
+varlist ::= var {"," var}
+
+var ::=  NAME | prefixexp "[" exp "]" | prefixexp "." NAME
+
+namelist ::= NAME {"," NAME}
+
+explist ::= {exp ","} exp
+
+exp ::=
+  "nil" | "false" | "true" | NUMBER | STRING | "..." | function |
+  prefixexp | tableconstructor | exp binop exp | unop exp
+
+prefixexp ::= var | functioncall | "(" exp ")"
+
+functioncall ::=  prefixexp args | prefixexp ":" NAME args
+
+args ::=  "(" [explist] ")" | tableconstructor | STRING
+
+function ::= function funcbody
+
+funcbody ::= "(" [parlist] ")" block end
+
+parlist ::= namelist ["," "..."] | "..."
+
+tableconstructor ::= "{" [fieldlist] "}"
+
+fieldlist ::= field {fieldsep field} [fieldsep]
+
+field ::= "[" exp "]" "=" exp | NAME "=" exp | exp
+
+fieldsep ::= "," | ";"
+
+binop ::= "+" | "-" | "*" | "/" | "^" | "%" | ".." |
+  "<" | "<=" | ">" | ">=" | "==" | "~=" |
+  "and" | "or"
+
+unop ::= "-" | not | "#"

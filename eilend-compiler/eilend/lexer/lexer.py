@@ -1,10 +1,5 @@
-from csv import excel
-
 from syntactix.lexical.lexer import LexerBase
-from syntactix.lexical.exceptions import (
-    LexerRequireFailedError,
-    LexerUnexpectedCharError,
-)
+from syntactix.lexical.exceptions import LexerRequireFailedError
 
 from eilend.lexer.token import (
     ALLOWED_NAME_CHARS, ALLOWED_NAME_START_CHARS,
@@ -47,6 +42,8 @@ class Lexer(LexerBase[Token, TokenType]):
             self.add_token(TokenType.NEWLINE)
             self.mark_next_line()
             self.reset_start()
+        elif ch == "#":
+            self.scan_comment()
         elif ch.isnumeric():
             self.scan_number()
         elif ch == '"':
@@ -55,6 +52,13 @@ class Lexer(LexerBase[Token, TokenType]):
             self.scan_name()
         else:
             self.unexpected(ch)
+
+    def scan_comment(self) -> None:
+        self.consume_while(
+            lambda: self.peek != "\n\r",
+            not_at_end=True
+        )
+        self.add_token(TokenType.COMMENT)
 
     def scan_number(self) -> None:
         self.consume_while(
@@ -70,12 +74,14 @@ class Lexer(LexerBase[Token, TokenType]):
             else:
                 # roll back, not a float number
                 self.inc_pos(-1)
+        if self.peek and not self.peek.isspace():
+            self.unexpected(self.peek)
         self.add_token(TokenType.NUMBER)
 
     def scan_string(self) -> None:
         escaping = False
         chars = []
-        while self.peek and (self.peek != '"' or escaping):
+        while self.peek and (self.peek not in '"\n\r' or escaping):
             if self.peek == "\\" and not escaping:
                 escaping = True
                 self.consume()

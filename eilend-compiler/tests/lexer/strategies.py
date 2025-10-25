@@ -1,5 +1,3 @@
-import string
-
 from hypothesis import strategies, assume
 
 from eilend.lexer.token import (
@@ -43,3 +41,15 @@ def valid_identifier(draw):
     identifier = start + other
     assume(identifier not in KEYWORDS)
     return identifier
+
+
+@strategies.composite
+def valid_comment(draw):
+    text = draw(
+        strategies.text(
+            alphabet=strategies.characters(
+                codec="utf-8", exclude_characters="\n\r\f"
+            )
+        )
+    )
+    return f"#{text}"

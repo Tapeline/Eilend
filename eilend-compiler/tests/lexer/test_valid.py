@@ -1,12 +1,12 @@
 from numbers import Number
 
 import pytest
-from hypothesis import given
+from hypothesis import given, example
 from eilend.lexer.token import Token, TokenType
 
 from tests.lexer.conftest import call_lexer
 from tests.lexer.strategies import (
-    valid_identifier,
+    valid_comment, valid_identifier,
     valid_number_literal,
     valid_string_literal,
 )
@@ -28,6 +28,8 @@ def test_punctuation():
     ]
 
 
+@example("1234")
+@example("3.14")
 @given(src=valid_number_literal())
 def test_numbers(src: str):
     tokens = call_lexer(src)
@@ -36,6 +38,10 @@ def test_numbers(src: str):
     assert tokens[0].lexeme == src
 
 
+@example('""')
+@example('"abc"')
+@example('"\\n"')
+@example('"\\""')
 @given(src=valid_string_literal())
 def test_strings(src: str):
     tokens = call_lexer(src)
@@ -44,9 +50,23 @@ def test_strings(src: str):
     assert tokens[0].lexeme == src
 
 
+@example("abc")
+@example("my_name")
+@example("NameWithNumbers1234AndUpperCase")
 @given(src=valid_identifier())
 def test_names(src: str):
     tokens = call_lexer(src)
     assert len(tokens) == 1
     assert tokens[0].type == TokenType.NAME
+    assert tokens[0].lexeme == src
+
+
+@example("#")  # blank comment
+@example("# simple comment")
+@example("# consecutive # hashes")
+@given(src=valid_comment())
+def test_comments(src: str):
+    tokens = call_lexer(src)
+    assert len(tokens) == 1
+    assert tokens[0].type == TokenType.COMMENT
     assert tokens[0].lexeme == src

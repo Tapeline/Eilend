@@ -60,6 +60,7 @@ class TokenType(Enum):
     NAME = "name"
 
     NEWLINE = "\n"
+    COMMENT = "#"
 
 
 @dataclass(slots=True, frozen=True)
@@ -132,5 +133,7 @@ ESCAPES: Final = MappingProxyType({
     "f": "\f",
     "v": "\v",
     "\\": "\\",
-    '"': '"'
+    '"': '"',
+    "\n": "\n",
+    "\r": "\r",
 })

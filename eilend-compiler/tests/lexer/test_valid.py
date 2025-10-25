@@ -42,6 +42,7 @@ def test_numbers(src: str):
 @example('"abc"')
 @example('"\\n"')
 @example('"\\""')
+@example('"\\\nwraps on second line"')
 @given(src=valid_string_literal())
 def test_strings(src: str):
     tokens = call_lexer(src)

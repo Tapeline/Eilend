@@ -40,6 +40,7 @@ class TokenType(Enum):
     COLON = ":"
     VARARG = "..."
     COMMA = ","
+    LOCAL = "local"
 
     FUNCTION = "function"
     IF = "if"
@@ -55,7 +56,8 @@ class TokenType(Enum):
     NIL = "nil"
     TRUE = "true"
     FALSE = "false"
-    NUMBER = "number"
+    INT = "int"
+    FLOAT = "float"
     STRING = "string"
     NAME = "name"
 
@@ -69,6 +71,10 @@ class Token(TokenLike[str, TokenType]):
     lexeme: str
     value: str
     pos: TokenPos
+
+    @classmethod
+    def eof(cls, pos: TokenPos) -> "Token":
+        return Token(TokenType.NEWLINE, "EOF", "EOF", pos)
 
 
 KEYWORDS: Final = MappingProxyType(
@@ -90,6 +96,7 @@ KEYWORDS: Final = MappingProxyType(
         "or": TokenType.OR,
         "not": TokenType.NOT,
         "len": TokenType.LEN,
+        "local": TokenType.LOCAL,
     }
 )
 

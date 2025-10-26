@@ -8,9 +8,17 @@ from eilend.lexer.token import (
 
 
 @strategies.composite
-def valid_number_literal(draw):
+def valid_int_literal(draw):
     return draw(strategies.from_regex(
-        r"[0-9]+(\.[0-9]+)?",
+        r"[0-9]+",
+        fullmatch=True
+    ))
+
+
+@strategies.composite
+def valid_float_literal(draw):
+    return draw(strategies.from_regex(
+        r"[0-9]+\.[0-9]+",
         fullmatch=True
     ))
 

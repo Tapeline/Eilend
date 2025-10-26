@@ -2,7 +2,6 @@
 
 
 stmt ::=
-  varlist "=" explist |
 
   "{" stmt {stmt} "}" |
 
@@ -20,7 +19,13 @@ stmt ::=
 
   "local" "function" NAME "(" [parlist] ")" stmt |
 
+  varlist "=" explist |
+
   "local" namelist ["=" explist] |
+
+  "return" [expr] |
+
+  "break" |
 
   expr
 
@@ -34,8 +39,6 @@ namelist ::= NAME {"," NAME}
 funcname ::= NAME {"." NAME} [":" NAME]
 
 explist ::= {exp ","} exp
-
-laststat ::= "return" [explist] | "break"
 
 parlist ::= namelist ["," "..."] | "..."
 

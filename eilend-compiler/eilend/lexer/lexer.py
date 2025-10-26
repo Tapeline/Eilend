@@ -65,8 +65,10 @@ class Lexer(LexerBase[Token, TokenType]):
             lambda: self.peek.isnumeric(),
             not_at_end=True
         )
+        is_int = True
         if self.match("."):
             if self.peek.isnumeric():
+                is_int = False
                 self.consume_while(
                     lambda: self.peek.isnumeric(),
                     not_at_end=True
@@ -76,7 +78,7 @@ class Lexer(LexerBase[Token, TokenType]):
                 self.inc_pos(-1)
         if self.peek and not self.peek.isspace():
             self.unexpected(self.peek)
-        self.add_token(TokenType.NUMBER)
+        self.add_token(TokenType.INT if is_int else TokenType.FLOAT)
 
     def scan_string(self) -> None:
         escaping = False

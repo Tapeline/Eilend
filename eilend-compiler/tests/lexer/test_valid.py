@@ -7,8 +7,7 @@ from eilend.lexer.token import Token, TokenType
 from tests.lexer.conftest import call_lexer
 from tests.lexer.strategies import (
     valid_comment, valid_identifier,
-    valid_number_literal,
-    valid_string_literal,
+    valid_string_literal, valid_int_literal, valid_float_literal,
 )
 
 
@@ -29,12 +28,21 @@ def test_punctuation():
 
 
 @example("1234")
-@example("3.14")
-@given(src=valid_number_literal())
+@given(src=valid_int_literal())
 def test_numbers(src: str):
     tokens = call_lexer(src)
     assert len(tokens) == 1
-    assert tokens[0].type == TokenType.NUMBER
+    assert tokens[0].type == TokenType.INT
+    assert tokens[0].lexeme == src
+
+
+
+@example("3.14")
+@given(src=valid_float_literal())
+def test_numbers(src: str):
+    tokens = call_lexer(src)
+    assert len(tokens) == 1
+    assert tokens[0].type == TokenType.FLOAT
     assert tokens[0].lexeme == src
 
 

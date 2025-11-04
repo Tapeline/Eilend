@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 from pprint import pprint
 
 from syntactix.lexical.exceptions import LexerError
@@ -10,9 +11,7 @@ from tests.lexer.conftest import call_lexer
 
 
 def main() -> None:
-    src = (
-        "a = 1"
-    )
+    src = Path("test.elnd").read_text()
     try:
         tokens = call_lexer(src)
         nodes = parse_tokens(tokens)

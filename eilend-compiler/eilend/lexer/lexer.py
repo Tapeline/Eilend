@@ -81,7 +81,11 @@ class Lexer(LexerBase[Token, TokenType]):
             else:
                 # roll back, not a float number
                 self.inc_pos(-1)
-        if self.peek and not self.peek.isspace():
+        if (
+            self.peek
+            and not self.peek.isspace()
+            and self.peek not in PUNCTUATION
+        ):
             self.unexpected(self.peek)
         self.add_token(TokenType.INT if is_int else TokenType.FLOAT)
 

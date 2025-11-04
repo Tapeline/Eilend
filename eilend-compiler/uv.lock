@@ -12,15 +12,6 @@ wheels = [
 ]
 
 [[package]]
-name = "attrs"
-version = "25.4.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6b/5c/685e6633917e101e5dcb62b9dd76946cbb57c26e133bae9e0cd36033c0a9/attrs-25.4.0.tar.gz", hash = "sha256:16d5969b87f0859ef33a48b35d55ac1be6e42ae49d5e853b597db70c35c57e11", size = 934251, upload-time = "2025-10-06T13:54:44.725Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3a/2a/7cc015f5b9f5db42b7d48157e23356022889fc354a2813c15934b7cb5c0e/attrs-25.4.0-py3-none-any.whl", hash = "sha256:adcf7e2a1fb3b36ac48d97835bb6d8ade15b8dcce26aba8bf1d14847b57a3373", size = 67615, upload-time = "2025-10-06T13:54:43.17Z" },
-]
-
-[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -67,15 +58,14 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.142.4"
+version = "6.145.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "attrs" },
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/47/0b/76a062d1d6cd68342b460c2f5627e1ad1102a3dd781acd5c096c75aca0d6/hypothesis-6.142.4.tar.gz", hash = "sha256:b3e71a84708994aa910ea47f1483ad892a7c390839959d689b2a2b07ebfd160e", size = 466047, upload-time = "2025-10-25T16:19:03.838Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/83/22/a3aba4f28826ddee2a1f5b0cb6fcc295012794139ea159990dc1e987cfd8/hypothesis-6.145.1.tar.gz", hash = "sha256:4e7610923de7e0c7d5c1bfa84114f2579e06f0e83a4ce9f073ca0c887d222b7e", size = 467743, upload-time = "2025-11-03T21:41:42.788Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3e/9f/8010f93e175ecd996f54df9019ee8c58025fc21ed47658b0a58dd25ebe8b/hypothesis-6.142.4-py3-none-any.whl", hash = "sha256:25eecc73fadecd8b491aed822204cfe4be9c98ff5c1e8e038d181136ffc54b5b", size = 533467, upload-time = "2025-10-25T16:19:00.443Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/e3/d4d9195ace4a407f665622c74635fd28901539b8ee375f31be08613eb94d/hypothesis-6.145.1-py3-none-any.whl", hash = "sha256:8b4c2d93adbacd235153a3ee075012fc870da341b32c3035838963b6241d6281", size = 534763, upload-time = "2025-11-03T21:41:38.695Z" },
 ]
 
 [[package]]
@@ -89,7 +79,7 @@ wheels = [
 
 [[package]]
 name = "inline-snapshot"
-version = "0.30.1"
+version = "0.31.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asttokens" },
@@ -97,9 +87,9 @@ dependencies = [
     { name = "pytest" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7d/89/125e7411ded6fda4c3881674dd815aaa175cd3f822a1e215edab491024b9/inline_snapshot-0.30.1.tar.gz", hash = "sha256:77c2e94a40f2da02909b39e3386c9fc23f532c92af45558e2d7bbabb5fd0cbc1", size = 2599126, upload-time = "2025-10-20T11:02:58.845Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d8/fd/519c4ea03c38fa71a42e09a0758f319be78758a5089f87ed786aa4f65542/inline_snapshot-0.31.0.tar.gz", hash = "sha256:7b5ac05ad695151ae425b0f04318613a2440d3402c08d51ecc66ba6d0b434e5d", size = 2600041, upload-time = "2025-10-27T12:01:04.923Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a7/d8/1c4a926d1201be6a453c1efa795d6ca58735783b017e4ef78536879e82e9/inline_snapshot-0.30.1-py3-none-any.whl", hash = "sha256:4e65fe9d6d266d5dcbab9a75aef65ade386ba257238e30e11ce4cebf9a4312c8", size = 71265, upload-time = "2025-10-20T11:02:57.063Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/9c/db01a8d8813ef51231657fdb2d9ca4abdcd789e2fb9675603c1ae7c73444/inline_snapshot-0.31.0-py3-none-any.whl", hash = "sha256:8bb54ea7c5da628f53e4485aed484118ed06d7e29c686aecb952e3771b540c80", size = 71793, upload-time = "2025-10-27T12:01:03.576Z" },
 ]
 
 [[package]]
@@ -191,7 +181,7 @@ wheels = [
 [[package]]
 name = "syntactix"
 version = "0.1.0"
-source = { git = "https://github.com/Tapeline/Syntactix.git#76bd806f65110af9d88f96c1cadb9c2cff25f051" }
+source = { git = "https://github.com/Tapeline/Syntactix.git#c01b23b0bd48b2c15d061ef4597df929e71b57ad" }
 
 [[package]]
 name = "syrupy"

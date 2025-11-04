@@ -7,7 +7,11 @@ from syntactix.parser.exceptions import ParserRequireFailedError
 from eilend.lexer.token import Token, TokenType
 from eilend.parser.constants import BIN_OP_MAP, UN_OP_MAP
 from eilend.parser.desugar import desugar_compound_comparison
-from eilend.parser.exceptions import AssignListLenDiffersError, BadNumberError
+from eilend.parser.exceptions import (
+    AssignListLenDiffersError, BadNumberError,
+    BadAssignTargetError,
+)
+from eilend.parser.invariants import can_be_an_assign_target
 from eilend.parser.nodes.base import (
     Node, QualName, NameQualifierItem,
     NameQualifierItemAccess,
@@ -50,11 +54,15 @@ class Parser(ParserBase[Token, TokenType, Node]):
         nodes = []
         while self.not_at_end:
             nodes.append(self._parse_stmt())
+            while self.match(TokenType.NEWLINE):
+                pass  # consume all newlines
         return nodes
 
     def _parse_stmt(self) -> Node:
         if block_start := self.match(TokenType.LBRACE):
             nodes = []
+            while self.match(TokenType.NEWLINE):
+                pass  # consume all newlines
             while self.not_at_end and self.peek_rq.type != TokenType.RBRACE:
                 nodes.append(self._parse_stmt())
                 while self.match(TokenType.NEWLINE):
@@ -152,9 +160,15 @@ class Parser(ParserBase[Token, TokenType, Node]):
         expr = self._parse_expr()
         targets = [expr]
         if assign_tok := self.match(TokenType.ASSIGN):
+            if not can_be_an_assign_target(expr):
+                self.error(
+                    BadAssignTargetError,
+                    target=expr,
+                    pos=expr.token.pos
+                )
             expr = self._parse_expr()
             return AssignNode(assign_tok, [(targets[0], expr)])
-        if not self.match(TokenType.COMMA):
+        if not self.pattern_ahead(TokenType.COMMA):
             return expr
         while self.match(TokenType.COMMA):
             targets.append(self._parse_expr())
@@ -167,6 +181,13 @@ class Parser(ParserBase[Token, TokenType, Node]):
                 AssignListLenDiffersError,
                 lhs=len(targets), rhs=len(exprs)
             )
+        for target in targets:
+            if not can_be_an_assign_target(target):
+                self.error(
+                    BadAssignTargetError,
+                    target=target,
+                    pos=target.token.pos
+                )
         return AssignNode(assign_tok, list(zip(targets, exprs)))
 
     def _parse_qualname(self) -> QualName:
@@ -249,11 +270,15 @@ class Parser(ParserBase[Token, TokenType, Node]):
         expr = self._parse_primary()
         while True:
             if call_tok := self.match_skip_line(TokenType.LPAREN):
-                args = [self._parse_expr()]
-                while self.match_skip_line(TokenType.COMMA):
-                    args.append(self._parse_expr())
-                self.require_skip_line(TokenType.RPAREN)
-                expr = CallNode(call_tok, expr, args)
+                if self.match_skip_line(TokenType.RPAREN):
+                    # empty arg edge case
+                    expr = CallNode(call_tok, expr, [])
+                else:
+                    args = [self._parse_expr()]
+                    while self.match_skip_line(TokenType.COMMA):
+                        args.append(self._parse_expr())
+                    self.require_skip_line(TokenType.RPAREN)
+                    expr = CallNode(call_tok, expr, args)
             elif meth_tok := self.match_skip_line(TokenType.COLON):
                 meth_name = self.require(TokenType.NAME)
                 self.require(TokenType.LPAREN)
@@ -281,6 +306,10 @@ class Parser(ParserBase[Token, TokenType, Node]):
     def _parse_primary(self) -> ExprNode:
         if tok := self.match(TokenType.NIL):
             return LiteralNil(tok)
+        if tok := self.match(TokenType.TRUE):
+            return LiteralBool(tok, value=True)
+        if tok := self.match(TokenType.FALSE):
+            return LiteralBool(tok, value=False)
         if tok := self.match(TokenType.INT):
             try:
                 return LiteralInt(tok, int(tok.value))

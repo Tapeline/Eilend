@@ -41,7 +41,12 @@ class TokenType(Enum):
     VARARG = "..."
     COMMA = ","
     LOCAL = "local"
+    TYPING = "::"
+    TYPE_AND = "&"
+    TYPE_OR = "|"
+    TYPE_NOT = "~"
 
+    TYPE = "type"
     FUNCTION = "function"
     IF = "if"
     ELSE = "else"
@@ -125,6 +130,10 @@ PUNCTUATION: Final = frozenset(
         ":",
         "...",
         ",",
+        "::",
+        "&",
+        "|",
+        "~"
     )
 )
 

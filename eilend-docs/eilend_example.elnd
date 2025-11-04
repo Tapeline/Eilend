@@ -1,7 +1,38 @@
-local a = {1, 2, 3};
-
-function f(x :: Int, y :: Float) :: Int {
-    local c = 0
-    for z = x ... y, step 5
-        c += 1
+type User = {
+    username :: Str,
+    password :: Str,
 }
+
+error type UserNotFound = {}
+error type UserNotAuthenticated = {}
+
+type UserService = {
+    get_user :: (UserService, Str) -> User ! UserNotFound,
+    authenticate :: (UserService, Str, Str) -> User ! UserNotFound ! UserNotAuthenticated,
+}
+
+function create_user_service(users: Array[User]) -> UserService {
+    return {
+        get_user = (self, username) -> {
+            if not contains(users, username)
+                return Error(UserNotFound)
+            else
+                return Ok(first_of{users, which=?.username == username})
+        },
+        authenticate = (self, username, password) -> {
+            user = try self:get_user(username)
+            if user.password != password
+                return Error(UserNotAuthenticated)
+            else
+                return Ok(user)
+        }
+    }
+}
+
+service = create_user_service(
+    {
+        {username="user", password="pass"},
+    }
+)
+result = service:authenticate("user", "pass")
+print(result)

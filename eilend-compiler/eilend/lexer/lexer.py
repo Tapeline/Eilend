@@ -34,6 +34,11 @@ class Lexer(LexerBase[Token, TokenType]):
                 self.add_token(TokenType.ARROW)
             else:
                 self.add_token(TokenType.MINUS)
+        elif ch == ":":
+            if self.match(":"):
+                self.add_token(TokenType.TYPING)
+            else:
+                self.add_token(TokenType.COLON)
         elif ch in PUNCTUATION:
             self.add_token(TokenType(ch))
         elif ch in " \t":

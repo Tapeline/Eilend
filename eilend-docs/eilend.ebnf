@@ -32,15 +32,15 @@ stmt ::=
 
 varlist ::= var {"," var}
 
-var ::= NAME { "." NAME }
+var ::= NAME { "." NAME } ["::" type_expr]
 
-namelist ::= NAME {"," NAME}
+namelist ::= NAME ["::" type_expr] {"," NAME ["::" type_expr]}
 
 funcname ::= NAME {"." NAME} [":" NAME]
 
 explist ::= {exp ","} exp
 
-parlist ::= namelist ["," "..."] | "..."
+parlist ::= namelist ["," "..." ["::" type_expr]] | "..." ["::" type_expr]
 
 
 expr ::= disj
@@ -111,4 +111,35 @@ tableconstructor ::= "{" [fieldlist] "}"
 
 fieldlist ::= field {"," field} [","]
 
-field ::= "[" exp "]" "=" exp | NAME "=" exp | exp
+field ::= "[" exp "]" ["::" type_expr] "=" exp | NAME ["::" type_expr] "=" exp | exp
+
+
+type_alias ::=
+    "type" NAME [ "(" NAME { "," NAME } ")" ] "=" type_expr
+
+type_expr ::=
+    type_disj
+
+type_disj ::=
+    type_conj { "|" type_conj }
+
+type_conj ::=
+    type_unary { "&" type_unary }
+
+type_unary ::=
+    "~" type_morph |
+    type_morph
+
+type_morph ::=
+    type_primary {
+    "(" type_expr ")"
+    }
+
+type_primary ::=
+    NAME |
+    "(" type_expr { "," type_expr } ")" "->" type_expr |
+    type_table
+
+type_table ::=
+    "{" NAME "::" type_expr { "," NAME "::" type_expr } "}"
+

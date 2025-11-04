@@ -13,7 +13,7 @@ from tests.lexer.strategies import (
 
 def test_punctuation():
     tokens = call_lexer(
-        "( ) { } [ ] + - * / % < <= > >= == != = -> . : ... ,"
+        "( ) { } [ ] + - * / % < <= > >= == != = -> . : ... , ::"
     )
     token_types = [token.type for token in tokens]
     assert token_types == [
@@ -23,7 +23,7 @@ def test_punctuation():
         TokenType.MODULO, TokenType.LESS, TokenType.LESS_EQ,
         TokenType.GREATER, TokenType.GREATER_EQ, TokenType.EQ,
         TokenType.NEQ, TokenType.ASSIGN, TokenType.ARROW, TokenType.DOT,
-        TokenType.COLON, TokenType.VARARG, TokenType.COMMA
+        TokenType.COLON, TokenType.VARARG, TokenType.COMMA, TokenType.TYPING
     ]
 
 

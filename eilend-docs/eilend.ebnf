@@ -3,6 +3,8 @@
 
 stmt ::=
 
+  type_stmt |
+
   "{" stmt {stmt} "}" |
 
   "while" exp stmt |
@@ -15,7 +17,7 @@ stmt ::=
 
   "for" namelist "in" explist stmt |
 
-  "function" funcname "(" [parlist] ")" stmt |
+  "function" funcname "(" [typed_parlist] ")" stmt |
 
   "local" "function" NAME "(" [parlist] ")" stmt |
 
@@ -34,13 +36,15 @@ varlist ::= var {"," var}
 
 var ::= NAME { "." NAME } ["::" type_expr]
 
-namelist ::= NAME ["::" type_expr] {"," NAME ["::" type_expr]}
+namelist ::= NAME { "," NAME }
+namelist ::= NAME "::" type_expr {"," NAME "::" type_expr}
 
 funcname ::= NAME {"." NAME} [":" NAME]
 
 explist ::= {exp ","} exp
 
-parlist ::= namelist ["," "..." ["::" type_expr]] | "..." ["::" type_expr]
+parlist ::= namelist ["," "..."] | "..."
+typed_parlist ::= typed_namelist ["," "..." "::" type_expr] | "..." "::" type_expr
 
 
 expr ::= disj
@@ -113,6 +117,9 @@ fieldlist ::= field {"," field} [","]
 
 field ::= "[" exp "]" ["::" type_expr] "=" exp | NAME ["::" type_expr] "=" exp | exp
 
+
+type_stmt ::=
+    type_alias
 
 type_alias ::=
     "type" NAME [ "(" NAME { "," NAME } ")" ] "=" type_expr
